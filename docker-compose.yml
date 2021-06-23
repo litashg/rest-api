@@ -1,0 +1,61 @@
+version: '3'
+
+services:
+  sym_nginx:
+    image: nginx:stable-alpine
+    container_name: sym_nginx
+    ports:
+      - 80:80
+    volumes:
+      - ./project/httdocs:/var/www/html
+      - .docker/nginx/domains/sym.loc.conf:/etc/nginx/conf.d/sym.loc.conf
+      - ./logs/nginx:/var/log/nginx
+    depends_on:
+      - sym_base
+      - sym_mysql
+
+  sym_mysql:
+    image: mysql:5.7.29
+    container_name: sym_mysql
+    restart: unless-stopped
+    command: --character-set-server=utf8 --collation-server=utf8_general_ci
+    tty: true
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./.docker/mysql:/var/lib/mysql
+    env_file:
+      - .env
+    environment:
+      MYSQL_DATABASE: sym
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+
+  sym_base:
+    build: .docker
+    container_name: sym_base
+    volumes:
+      - ./project/httdocs:/var/www/html
+    ports:
+      - "9000:9000"
+
+#  composer:
+#    build: .docker
+#    container_name: composer
+#    volumes:
+#      - ./project/httdocs:/var/www/html
+#    depends_on:
+#      - mysql
+#    working_dir: /var/www/html
+#    entrypoint: ['sh', '/usr/local/bin/docker-entrypoint.sh']
+#
+  sym_adminer:
+    image: adminer
+    restart: 'always'
+    ports:
+    - 8080:8080
+    links:
+    - sym_mysql
+    depends_on:
+    - sym_mysql

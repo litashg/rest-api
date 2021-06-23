@@ -1,0 +1,30 @@
+blog_list:
+  path: /blog
+  controller: App\Controller\Api\v1\BlogController::getListAction
+  methods: [GET]
+
+blog_one:
+  path: /blog/{id}
+  controller: App\Controller\Api\v1\BlogController::getOneAction
+  methods: [GET]
+  requirements:
+    id: '[\d]$'
+
+blog_create:
+  path: /blog
+  controller: App\Controller\Api\v1\BlogController::createAction
+  methods: [POST]
+
+blog_update:
+  path: /blog/{id}
+  controller: App\Controller\Api\v1\BlogController::updateAction
+  methods: [PUT]
+  requirements:
+    id: '[\d]$'
+
+blog_remove:
+  path: /blog/{id}
+  controller: App\Controller\Api\v1\BlogController::deleteAction
+  methods: [DELETE]
+  requirements:
+    id: '[\d]$'
